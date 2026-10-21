@@ -1,0 +1,29 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    # 每 6 小时自动检测并同步一次上游更新
+    - cron: '0 */6 * * *'
+  # 允许手动在 GitHub 页面点击触发
+  workflow_dispatch:
+
+jobs:
+  sync_latest_from_upstream:
+    name: Sync latest commits from upstream repo
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: 检出当前仓库
+      - name: Checkout target repo
+        uses: actions/checkout@v4
+
+      # Step 2: 自动同步上游分支
+      - name: Sync upstream changes
+        uses: a223798939/action-upstream-sync@v2.3
+        with:
+          upstream_repo: "原作者账号/EdgeTunnel仓库名" # ⚠️ 注意：此处需替换为原作者的实际 GitHub 路径 (如 zizifn/edgetunnel)
+          upstream_branch: "main" # 上游仓库的主分支名称（通常是 main 或 master）
+          target_branch: "main"   # 你仓库的主分支名称
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+          # 如果你的仓库有自定义改动产生冲突，可以设置是否强行覆盖（true 为强制同步上游）
+          force: true
